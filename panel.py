@@ -67,28 +67,81 @@ def show_panel(connection):
     import tkinter as tk
     from tkinter import ttk
 
+    violet = "#5750D8"
+    navy = "#1F2246"
+    muted = "#51567C"
+    card_background = "#F8F7FF"
+
     root = tk.Tk()
     root.title("Serial Panel Lab")
-    root.minsize(430, 230)
-    content = ttk.Frame(root, padding=20)
-    content.pack(fill="both", expand=True)
+    root.configure(background=violet)
+    root.minsize(590, 390)
 
-    ttk.Label(content, text="Temperature logger", font=("TkDefaultFont", 18)).pack(anchor="w")
+    body_font = ("TkDefaultFont", 11)
+    label_font = ("TkDefaultFont", 11, "bold")
+
+    content = tk.Frame(root, background=violet, padx=26, pady=22)
+    content.pack(fill="both", expand=True)
+    tk.Label(
+        content, text="Temperature logger", font=("TkDefaultFont", 25, "bold"),
+        background=violet, foreground="#FFFFFF",
+    ).pack(anchor="w")
+    tk.Label(
+        content, text="Serial Panel Lab simulator", font=body_font,
+        background=violet, foreground="#F2EFFF",
+    ).pack(anchor="w", pady=(0, 16))
+
+    dashboard = tk.Frame(content, background=card_background, padx=18, pady=15)
+    dashboard.pack(fill="both", expand=True)
+
     temperature = tk.StringVar(value="— °C")
     state = tk.StringVar(value="Idle")
     reply_text = tk.StringVar(value="Ready")
-    ttk.Label(content, textvariable=temperature, font=("TkDefaultFont", 30)).pack(anchor="w", pady=(8, 0))
-    ttk.Label(content, textvariable=state).pack(anchor="w")
-    buttons = ttk.Frame(content)
-    buttons.pack(anchor="w", pady=12)
+
+    metrics = tk.Frame(dashboard, background=card_background)
+    metrics.pack(fill="x")
+    metrics.columnconfigure((0, 1), weight=1, uniform="metrics")
+
+    for column, (caption, value, background, size) in enumerate((
+        ("TEMPERATURE", temperature, "#E4F2FF", 31),
+        ("LOGGER STATUS", state, "#DEF3E5", 24),
+    )):
+        tile = tk.Frame(metrics, background=background, padx=14, pady=8)
+        tile.grid(row=0, column=column, sticky="nsew", padx=(0, 8) if column == 0 else (8, 0))
+        tk.Label(
+            tile, text=caption, background=background, foreground=muted, font=label_font,
+        ).pack(anchor="w")
+        tk.Label(
+            tile, textvariable=value, background=background, foreground=navy,
+            font=("TkDefaultFont", size, "bold"),
+        ).pack(anchor="w")
+
+    style = ttk.Style(root)
+    style.theme_use("clam")
+    style.configure("Panel.TFrame", background=card_background)
+    buttons = ttk.Frame(dashboard, style="Panel.TFrame")
+    buttons.pack(fill="x", pady=16)
+    buttons.columnconfigure((0, 1, 2, 3), weight=1)
+
+    tk.Label(
+        dashboard, text="SIMULATOR RESPONSE", background=card_background,
+        foreground=muted, font=label_font,
+    ).pack(anchor="w")
+    response = tk.Label(
+        dashboard, textvariable=reply_text, anchor="w", padx=12, pady=8,
+        background="#ECE9FB", foreground=navy, font=("TkFixedFont", 11),
+    )
+    response.pack(fill="x", pady=(4, 0))
 
     def send(command, corrupt=False):
         try:
             reply = connection.exchange(command, corrupt=corrupt)
         except OSError as error:
             reply_text.set(str(error))
+            response.configure(background="#FFE4DB")
             return
         reply_text.set(reply)
+        response.configure(background="#FFE4DB" if reply.startswith("ERR ") else "#DEF3E5")
         if reply.startswith("OK TEMP "):
             temperature.set(f"{reply.split()[-1]} °C")
         elif reply == "OK RECORDING":
@@ -96,14 +149,22 @@ def show_panel(connection):
         elif reply == "OK IDLE":
             state.set("Idle")
 
-    for label, command, corrupt in (
-        ("Start", "BEGIN", False), ("Read", "READ", False),
-        ("Stop", "END", False), ("Send bad frame", "END", True),
-    ):
+    for column, (label, command, corrupt, background, active) in enumerate((
+        ("Start", "BEGIN", False, "#FFC64F", "#FFDA85"),
+        ("Read", "READ", False, "#85C9F5", "#ADE0FF"),
+        ("Stop", "END", False, "#FFA18E", "#FFC3B6"),
+        ("Send bad frame", "END", True, "#E7DFFF", "#F4EEFF"),
+    )):
+        button_style = f"Panel{column}.TButton"
+        style.configure(
+            button_style, background=background, foreground=navy,
+            bordercolor=violet, focuscolor=navy, font=label_font, padding=(10, 9),
+        )
+        style.map(button_style, background=[("pressed", active), ("active", active)])
         ttk.Button(
-            buttons, text=label, command=lambda c=command, b=corrupt: send(c, b)
-        ).pack(side="left", padx=(0, 5))
-    ttk.Label(content, textvariable=reply_text).pack(anchor="w")
+            buttons, style=button_style, text=label,
+            command=lambda c=command, b=corrupt: send(c, b),
+        ).grid(row=0, column=column, sticky="ew", padx=3)
     root.mainloop()
 
 

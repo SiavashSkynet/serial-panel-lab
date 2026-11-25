@@ -10,7 +10,7 @@ ScreenSteps describes three ways to document a procedure. We use a **flowchart**
 
 The simulator checks each newline-delimited request before applying it. A malformed frame returns `ERR FRAME` and leaves the recording state alone. A valid frame reaches the command handler. A valid `READ` can still return `ERR IDLE` if recording has stopped.
 
-![Branching flowchart for frame validation](images/Serial-Panel-Lab-Flowchart-BNazanin.png)
+![Branching flowchart for frame validation](images/Serial-Panel-Lab-Flowchart.png)
 
 ## 2. Standard article
 
@@ -22,15 +22,15 @@ The simulator checks each newline-delimited request before applying it. A malfor
 
 The diagram below shows four exchanges from that session. Each request has an ASCII command, a space, an asterisk, two hexadecimal CRC-8 digits and a newline. Each response is one text line.
 
-![Request and response trace](images/Serial-Panel-Lab-Message-Flow-BNazanin.png)
+![Request and response trace](images/Serial-Panel-Lab-Message-Flow.png)
 
 ### Function calls
 
 A button calls `send()` inside `show_panel()`. It calls `LoggerConnection.exchange()`, which uses `encode_request()` before writing the request. On the C side, `main()` assembles the input line and calls `decode_request()`. The decoder uses `crc8()` to check the checksum when the format is valid. If decoding succeeds, `main()` calls `handle_command()`. Otherwise, it emits `ERR FRAME`. On return, `send()` updates the reply text and, for successful replies, the applicable temperature or state field. [Python source](../../panel.py) · [C source](../../simulator/temperature_node.c)
 
-![Function calls from the button to the simulator and back](images/Serial-Panel-Lab-Function-Calls-BNazanin.png)
+![Function calls from the button to the simulator and back](images/Serial-Panel-Lab-Function-Calls.png)
 
-![Overview of the panel, frame and simulator](images/Serial-Panel-Lab-Workflow-BNazanin.png)
+![Overview of the panel, frame and simulator](images/Serial-Panel-Lab-Workflow.png)
 
 ## 3. Interactive workflow
 

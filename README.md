@@ -8,7 +8,7 @@ A Python desktop panel and a C simulator for a temperature logger. Start a recor
 
 [Interactive workflow (English)](docs/en/workflow.md) · [گردش کار تعاملی (فارسی)](docs/fa/workflow.md)
 
-![Temperature logger flowchart](docs/en/images/Serial-Panel-Lab-Flowchart-BNazanin.png)
+![Temperature logger flowchart](docs/en/images/Serial-Panel-Lab-Flowchart.png)
 
 ## Build and try it
 
