@@ -2,11 +2,13 @@
 
 A Python desktop panel and a C simulator for a temperature logger. Start a recording, request a simulated temperature reading, or send a deliberately corrupt frame to see the receiving process reject it.
 
-## Message flow and function calls
+## Call flow documentation
 
-![Message exchange between the Python panel and the C simulator](./docs/images/Serial-Panel-Lab-Message-Flow-BNazanin.png)
+[English article](docs/en/README.md) · [مقالهٔ فارسی](docs/fa/README.md)
 
-![Function calls from the panel button to the simulator and back](./docs/images/Serial-Panel-Lab-Function-Calls-BNazanin.png)
+[Interactive workflow (English)](docs/en/workflow.md) · [گردش کار تعاملی (فارسی)](docs/fa/workflow.md)
+
+![Temperature logger flowchart](docs/en/images/Serial-Panel-Lab-Flowchart-BNazanin.png)
 
 ## Build and try it
 
