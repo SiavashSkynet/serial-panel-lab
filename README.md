@@ -2,6 +2,12 @@
 
 A Python desktop panel and a C simulator for a temperature logger. Start a recording, request a simulated temperature reading, or send a deliberately corrupt frame to see the receiving process reject it.
 
+## Message flow and function calls
+
+![Message exchange between the Python panel and the C simulator](./docs/images/Serial-Panel-Lab-Message-Flow-BNazanin.png)
+
+![Function calls from the panel button to the simulator and back](./docs/images/Serial-Panel-Lab-Function-Calls-BNazanin.png)
+
 ## Build and try it
 
 Use Python 3 and a C99 compiler on Linux. The desktop panel also needs Tkinter and a running graphical session. On Debian-based distributions the Tkinter package is typically named `python3-tk`.
